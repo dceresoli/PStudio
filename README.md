@@ -6,9 +6,11 @@ structure codes like [Quantum-Espresso](www.quantum-espresso.org).
 
 ### Motivation (TL;DR)
 Why am I coding this package? There exist several pseudopotential generation
-code. Their input files are difficult to write and poorly documented. They
+codes: ld1, uspp, opium, atom, ape, oncvpsp, atompaw, fhi98pp...
+Their input files are difficult to write and poorly documented. They
 implement different pseudization methods and produce pseudopotentials with
-different file formats and poorly documented.
+different file formats that cannot be used directly by every electronic structure
+code.
 
 All existing codes are *non interactive*. Typically you have to repeat the
 following steps: (1) write the input file (2) run the code
