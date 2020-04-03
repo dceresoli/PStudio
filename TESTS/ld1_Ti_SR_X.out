@@ -1,0 +1,62 @@
+
+     Program LD1 v.6.1 (svn rev. 13369) starts on 25Mar2020 at 18: 3:32 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on     1 processors
+     Waiting for input...
+     Reading input from standard input
+     --------------------------- All-electron run ----------------------------
+
+     Ti                                                                         
+     scalar relativistic calculation
+
+     atomic number is 22.00
+     dft =SLA+NOC   lsd =0 sic =0 latt =0  beta=0.20 tr2=1.0E-14
+     Exchange-correlation      = SLA+NOC ( 1  0  0  0 0 0)
+     mesh =1963 r(mesh) =  99.97874 a.u. xmin = -8.00 dx = 0.00800
+     1 Ry =  13.60569193 eV, c = 137.03599966
+
+     n l     nl                  e(Ry)          e(Ha)          e(eV)
+     1 0     1S 1( 2.00)      -356.7495      -178.3747     -4853.8236
+     2 0     2S 1( 2.00)       -39.2373       -19.6187      -533.8506
+     2 1     2P 1( 6.00)       -32.5095       -16.2548      -442.3144
+     3 0     3S 1( 2.00)        -4.4826        -2.2413       -60.9888
+     3 1     3P 1( 6.00)        -2.7584        -1.3792       -37.5299
+     3 2     3D 1( 2.00)        -0.2436        -0.1218        -3.3145
+     4 0     4S 1( 2.00)        -0.2735        -0.1367        -3.7209
+
+     final scf error:  7.6E-15 reached in  31 iterations
+ 
+     Etot =   -1699.902473 Ry,    -849.951236 Ha,  -23128.349353 eV
+
+     Ekin =    1715.709338 Ry,     857.854669 Ha,   23343.412699 eV
+     Encl =   -4050.977040 Ry,   -2025.488520 Ha,  -55116.345628 eV
+     Eh   =     711.800502 Ry,     355.900251 Ha,    9684.538348 eV
+     Exc  =     -76.435273 Ry,     -38.217636 Ha,   -1039.954773 eV
+
+
+     normalization and overlap integrals
+
+     s(1S/1S) =  1.000000  <r> =   0.0697  <r2> =    0.0065  r(max) =   0.0458
+     s(1S/2S) = -0.002179
+     s(1S/3S) = -0.000787
+     s(1S/4S) = -0.000212
+     s(2S/2S) =  1.000000  <r> =   0.3260  <r2> =    0.1257  r(max) =   0.2706
+     s(2S/3S) = -0.000435
+     s(2S/4S) = -0.000115
+     s(2P/2P) =  1.000000  <r> =   0.2905  <r2> =    0.1041  r(max) =   0.2198
+     s(2P/3P) = -0.000340
+     s(3S/3S) =  1.000000  <r> =   1.0098  <r2> =    1.1783  r(max) =   0.8702
+     s(3S/4S) = -0.000064
+     s(3P/3P) =  1.000000  <r> =   1.0893  <r2> =    1.4021  r(max) =   0.8985
+     s(3D/3D) =  1.000000  <r> =   1.6466  <r2> =    3.7367  r(max) =   0.9811
+     s(4S/4S) =  1.000000  <r> =   3.5683  <r2> =   14.7873  r(max) =   2.9123
+
+     ------------------------ End of All-electron run ------------------------
+

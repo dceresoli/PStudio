@@ -1,0 +1,66 @@
+
+     Program LD1 v.6.4.1 starts on 25Mar2020 at 15:41:22 
+
+     This program is part of the open-source Quantum ESPRESSO suite
+     for quantum simulation of materials; please cite
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 21 395502 (2009);
+         "P. Giannozzi et al., J. Phys.:Condens. Matter 29 465901 (2017);
+          URL http://www.quantum-espresso.org", 
+     in publications or presentations arising from this work. More details at
+     http://www.quantum-espresso.org/quote
+
+     Parallel version (MPI), running on     1 processors
+
+     MPI processes distributed on     1 nodes
+     Waiting for input...
+     Reading input from standard input
+ F
+ error           0
+     --------------------------- All-electron run ----------------------------
+
+     Ti                                                                         
+
+     atomic number is 22.00
+     dft =PZ   lsd =0 sic =0 latt =0  beta=0.20 tr2=1.0E-14
+     Exchange-correlation      = PZ ( 1  1  0  0 0 0)
+     mesh =1963 r(mesh) =  99.97874 a.u. xmin = -8.00 dx = 0.00800
+     1 Ry =  13.60569193 eV
+
+     n l     nl                  e(Ry)          e(Ha)          e(eV)
+     1 0     1S 1( 2.00)      -354.5552      -177.2776     -4823.9688
+     2 0     2S 1( 2.00)       -38.9164       -19.4582      -529.4842
+     2 1     2P 1( 6.00)       -32.5714       -16.2857      -443.1562
+     3 0     3S 1( 2.00)        -4.5153        -2.2576       -61.4334
+     3 1     3P 1( 6.00)        -2.8452        -1.4226       -38.7110
+     3 2     3D 1( 2.00)        -0.3397        -0.1699        -4.6220
+     4 0     4S 1( 2.00)        -0.3348        -0.1674        -4.5550
+
+     final scf error:  2.9E-15 reached in  27 iterations
+ 
+     Etot =   -1694.532817 Ry,    -847.266408 Ha,  -23055.291467 eV
+
+     Ekin =    1692.099560 Ry,     846.049780 Ha,   23022.185334 eV
+     Encl =   -4017.455100 Ry,   -2008.727550 Ha,  -54660.256439 eV
+     Eh   =     710.438130 Ry,     355.219065 Ha,    9666.002338 eV
+     Exc  =     -79.615407 Ry,     -39.807703 Ha,   -1083.222700 eV
+
+
+     normalization and overlap integrals
+
+     s(1S/1S) =  1.000000  <r> =   0.0703  <r2> =    0.0066  r(max) =   0.0462
+     s(1S/2S) = -0.000000
+     s(1S/3S) =  0.000000
+     s(1S/4S) =  0.000000
+     s(2S/2S) =  1.000000  <r> =   0.3286  <r2> =    0.1276  r(max) =   0.2728
+     s(2S/3S) =  0.000000
+     s(2S/4S) =  0.000000
+     s(2P/2P) =  1.000000  <r> =   0.2913  <r2> =    0.1047  r(max) =   0.2198
+     s(2P/3P) = -0.000000
+     s(3S/3S) =  1.000000  <r> =   1.0163  <r2> =    1.1931  r(max) =   0.8772
+     s(3S/4S) = -0.000000
+     s(3P/3P) =  1.000000  <r> =   1.0901  <r2> =    1.4031  r(max) =   0.9057
+     s(3D/3D) =  1.000000  <r> =   1.5963  <r2> =    3.4624  r(max) =   0.9733
+     s(4S/4S) =  1.000000  <r> =   3.5073  <r2> =   14.1947  r(max) =   2.9123
+
+     ------------------------ End of All-electron run ------------------------
+

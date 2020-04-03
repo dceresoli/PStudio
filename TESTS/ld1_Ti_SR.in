@@ -1,0 +1,20 @@
+&input
+        title = 'Ti'
+	prefix = 'ti'
+        zed = 22
+        dft = 'PZ'
+	rel = 1
+        iswitch = 1
+        beta = 0.2
+        xmin = -8
+        dx = 0.008
+latt=0
+ /
+7
+1S  1  0  2.0  1
+2S  2  0  2.0  1
+2P  2  1  6.0  1
+3S  3  0  2.0  1
+3P  3  1  6.0  1
+3D  3  2  2.0  1
+4S  4  0  2.0  1
