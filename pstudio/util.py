@@ -13,9 +13,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .all_electron import AE
-from .configuration import *
-from .util import *
+"""Utility functions"""
 
-# exported symbols
-__all__ = [ 'AE', 'set_output' ]
+import sys
+
+# global output file and helper function
+_out = None
+
+def set_output(out):
+    """Set the default output file or stream"""
+    global _out
+    if out == '-':
+        _out = sys.stdout
+    elif isinstance(out, str):
+        _out = open(out, 'w')
+    else:
+        _out = out
+
+def p(*args, **kwargs):
+    """Helper routine to output data to a file or to stdout"""
+    global _out
+    if _out is not None:
+        print(*args, **kwargs, file=_out)

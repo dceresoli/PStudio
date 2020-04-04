@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-from pstudio import AE
+from pstudio import AE, set_output
 import numpy as np
 import matplotlib.pyplot as plt
 from math import pi
 
-#ae = AE('H', xcname='LDA', relativity='NR', config='1s1', out='-')
-#ae = AE('Li', xcname='LDA', relativity='NR', out='-')
-#ae = AE('Cl', xcname='LDA', relativity='SR', out='-')
-#ae = AE('Ti', xcname='LDA', relativity='NR', out='-', config='[Ar] 3d2 4s1', rmin=1e-4)
-ae = AE('Ti', xcname='LDA-py', relativity='SR', out='-')
+set_output('-')
+#ae = AE('H', xcname='LDA', relativity='NR', config='1s1')
+#ae = AE('Li', xcname='LDA', relativity='NR')
+#ae = AE('Cl', xcname='LDA', relativity='SR')
+#ae = AE('Ti', xcname='LDA', relativity='NR', config='[Ar] 3d2 4s1', rmin=1e-4)
+ae = AE('Ti', xcname='LDA-py', relativity='SR')
 
 try:
     ae.run(verbose=True)

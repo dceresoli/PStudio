@@ -1,5 +1,5 @@
 # PStudio - atomic and pseudopotentials calculations
-# Copyright (C) 2010  Davide Ceresoli <dceresoli@gmail.com>
+# Copyright (C) 2020  Davide Ceresoli <dceresoli@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

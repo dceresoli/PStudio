@@ -1,5 +1,5 @@
 # PStudio - atomic and pseudopotentials calculations
-# Copyright (C) 2010  Davide Ceresoli <dceresoli@gmail.com>
+# Copyright (C) 2020  Davide Ceresoli <dceresoli@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,11 +20,12 @@ import pickle
 
 from math import pi, sqrt, log
 import numpy as np
-from .xc import XC
 
 from .configuration import *
 from .radialgrid import RadialGrid
 from .oncvpsp_routines.oncvpsp import lschfb
+from .xc import XC
+from .util import p
 
 hartree = 27.211386
 
@@ -75,7 +76,7 @@ class AE(frozen):
     """Object for doing an atomic DFT calculation."""
 
     def __init__(self, symbol, xcname='LDA', relativity='SR', config=None,
-                 out='-', rmin=1e-5, rmax=100, npoints=2001):
+                 rmin=1e-5, rmax=100, npoints=2001):
         """Perform an AE atomic DFT calculation.
 
         Example::
@@ -83,13 +84,6 @@ class AE(frozen):
           fe = AE('Fe', xcname='PBE')
           fe.run(restart=False)
         """
-
-        # initialize output
-        if out == '-':
-            out = sys.stdout
-        elif isinstance(out, str):
-            out = open(out, 'w')
-        self.out = out
 
         # initialize variables
         self.symbol = symbol
@@ -130,7 +124,6 @@ class AE(frozen):
         self._freeze()         # no more attributes
 
         # print summary
-        p = self._print
         p()
         try:
             rel = {'NR': 'non relativistic', 'SR': 'scalar relativistic',
@@ -140,12 +133,6 @@ class AE(frozen):
         p('{0} atomic calculation for {1} ({2}, Z={3})'.format(rel, symbol, el.get_name(), self.Z))
         p('configuration: {0}, {1:g} electrons'.format(tuple_to_configuration(nlf),self.nelec))
         p('exchange-correlation: {0}'.format(self.xc.get_name()))
-
-    def _print(self, *args, **kwargs):
-        """Helper routine to output data to a file or to stdout"""
-        if self.out is None:
-            return
-        print(*args, **kwargs, file=self.out)
 
 
     def initialize_wave_functions(self):
@@ -157,8 +144,6 @@ class AE(frozen):
 
     def run(self, restart=False, verbose=False, mixing=0.2, thresh=1e-6):
         """Perform an all-electron SCF calculation"""
-        p = self._print
-
         N = self.N
         r = self.rgd.r
         dr = self.rgd.dr
@@ -319,7 +304,6 @@ class AE(frozen):
 
     def print_energies(self):
         """Print energy terms"""
-        p = self._print
         p()
         p('Energy contributions:')
         p('-'*72)
@@ -332,8 +316,6 @@ class AE(frozen):
 
 
     def print_eigenvalues(self):
-        p = self._print
-
         p()
         p('state      eigenvalue      eigenvalue        rmax')
         p('-'*72)
