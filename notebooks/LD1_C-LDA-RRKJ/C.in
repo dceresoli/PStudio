@@ -1,0 +1,35 @@
+&input
+        title = 'C'
+	prefix = 'c'
+        zed = 6
+        dft = 'PZ'
+	rel = 1
+        iswitch = 3
+        beta = 0.2
+        xmin = -8.0, dx = 0.005
+        nld = 3, rlderiv = 2.2, eminld  = -5.0, emaxld  = 5.0, deld = 0.005
+/
+3
+1S  1  0  2.0  1
+2S  2  0  2.0  1
+2P  2  1  2.0  1
+ &inputp
+	pseudotype = 1
+   	lloc = -1
+        rcloc = 1.54
+   	tm = .false.
+   	file_pseudopw = 'C.pz-tm-dc.UPF'
+        author = 'D.C.'
+ /
+2
+2S  1  0  2.0  0.00  1.54  1.54
+2P  2  1  2.0  0.00  1.54  1.54
+ &test
+   ecutmin = 60
+   ecutmax = 120
+   decut   = 10
+ /
+2
+2S  1  0  2.00  0.00  1.54  1.54
+2P  2  1  2.00  0.00  1.54  1.54
+

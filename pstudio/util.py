@@ -18,7 +18,7 @@
 import sys
 
 # global output file and helper function
-_out = None
+_out = sys.stdout
 
 def set_output(out):
     """Set the default output file or stream"""
