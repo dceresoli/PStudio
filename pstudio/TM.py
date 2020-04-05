@@ -18,32 +18,25 @@ import numpy as np
 from scipy.optimize import newton
 from math import log
 
+from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
 from .util import p
 
 
 def pseudize_TM(fae, l, rc, rgd, verbose=False, plot_c2=False, c2=0.0):
     """Pseudize a radial function using the TM method"""
 
-    # find the effective rc
-    ic = rgd.floor(rc)
-    r = rgd.r
-    rc = r[ic]
+    # find the effective rc, calc AE norm and AE derivatives
+    rc, ic = find_rc_ic(rgd, rc)
+    ae_norm = calc_ae_norm(fae, rgd, ic)
+    ae_deriv = calc_ae_deriv(fae, rgd, rc, ic, 5)
     if verbose:
         p('TM pseudization: l={1} rc={0:.4f}'.format(rc, l))
-
-    # calculate norm of AE wfc within rc
-    ae_norm = np.sum(fae[:ic]*fae[:ic] * rgd.dr[:ic])
-    if verbose:
         p('AE norm within rc       : {0:+.6f}'.format(ae_norm))
-
-    # calculate the derivatives of AE wfc
-    poly = np.polyfit(r[ic-10:ic+10], fae[ic-10:ic+10], deg=6)
-    ae_deriv = [np.polyval(np.polyder(poly,i),rc) for i in range(5)]
-    if verbose:
         for i,d in enumerate(ae_deriv):
             p('{0}-th AE derivative at rc: {1:+.6f}'.format(i, d))
 
     # experts only: plot the TM resisual as a function of c2 (there are two solutions!)
+    # TODO: write a functions just for that
     if plot_c2:
         import matplotlib.pyplot as plt
         c2range = np.linspace(-10,10,1000)
@@ -60,13 +53,14 @@ def pseudize_TM(fae, l, rc, rgd, verbose=False, plot_c2=False, c2=0.0):
     c = TM_solve_linear_problem(c2, ae_deriv, rc, l)
     if verbose:
         p('TM coefficients:', c)
-        p('norm error     :', np.sum(TM_function(r[:ic], l, c)**2 * rgd.dr[:ic])- ae_norm)
+        p('norm error     :', np.sum(TM_function(rgd.r[:ic], l, c)**2 * rgd.dr[:ic])- ae_norm)
         p('V"(0) condition:', (2*l+5)*c[2] + c[1]*c[1])
 
     # return pseudized function
     pswfc = fae.copy()
-    pswfc[:ic] = TM_function(r[:ic], l, c)
-
+    pswfc[:ic] = TM_function(rgd.r[:ic], l, c)
+    p()
+    
     return pswfc
 
 

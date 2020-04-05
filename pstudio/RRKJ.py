@@ -19,41 +19,33 @@ from scipy.optimize import bisect, newton
 from scipy.special import spherical_jn
 from math import log
 
+from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
+from .util import find_qi, deriv1, deriv2
 from .util import p
-
 
 def pseudize_RRKJ(fae, l, rc, rgd, nbess=3, rho0=0.1, verbose=False, plot_c2=False, c2=0.0):
     """Pseudize a radial function using the RRKJ method"""
     assert nbess == 3 or nbess == 4
 
-    # find the effective rc
-    ic = rgd.floor(rc)
-    r = rgd.r
-    rc = r[ic]
+    # find the effective rc, calc AE norm and AE derivatives
+    rc, ic = find_rc_ic(rgd, rc)
+    ae_norm = calc_ae_norm(fae, rgd, ic)
+    ae_deriv = calc_ae_deriv(fae, rgd, rc, ic, 3)
     if verbose:
         p('RRKJ{2} pseudization: l={1} rc={0:.4f}'.format(rc, l, nbess))
-
-    # calculate norm of AE wfc within rc
-    ae_norm = np.sum(fae[:ic]*fae[:ic] * rgd.dr[:ic])
-    if verbose:
         p('AE norm within rc       : {0:+.6f}'.format(ae_norm))
-
-    # calculate the derivatives of AE wfc
-    poly = np.polyfit(r[ic-10:ic+10], fae[ic-10:ic+10], deg=6)
-    ae_deriv = [np.polyval(np.polyder(poly,i),rc) for i in range(3)]
-    ae_dlog = np.polyval(np.polyder(poly,1), rc) / np.polyval(poly, rc)
-    if verbose:
         for i,d in enumerate(ae_deriv):
             p('{0}-th AE derivative at rc: {1:+.6f}'.format(i, d))
 
     # find q_i
-    qi = find_qi(l, rc, ae_dlog, nbess)
+    ae_dlog = ae_deriv[1]/ae_deriv[0]
+    qi = find_qi(l, rc, ae_dlog, nbess, rflag=True)
     if verbose:
-        p('qi: ', qi)
-        p('estimated cutoff: {0:g} Ha'.format(0.5*qi[-1]**2))
-
+        p('qi               : ', qi)
+        p('estimated cutoff : {0:g} Ha'.format(0.5*qi[-1]**2))
 
     # experts only: plot the TM resisual as a function of c2 (there are two solutions!)
+    # TODO: write a functions just for that
     if plot_c2:
         import matplotlib.pyplot as plt
         c2range = np.linspace(-10,10,1000)
@@ -70,42 +62,14 @@ def pseudize_RRKJ(fae, l, rc, rgd, nbess=3, rho0=0.1, verbose=False, plot_c2=Fal
     c = RRKJ_solve_linear_problem(c2, qi, ae_deriv, rc, l)
     if verbose:
         p('RRKJ coefficients:', c)
-        p('norm error       :', np.sum(RRKJ_function(r[:ic], l, c, qi)**2 * rgd.dr[:ic]) - ae_norm)
+        p('norm error       :', np.sum(RRKJ_function(rgd.r[:ic], l, c, qi)**2 * rgd.dr[:ic]) - ae_norm)
 
     # return pseudized function
     pswfc = fae.copy()
-    pswfc[:ic] = RRKJ_function(r[:ic], l, c, qi)
+    pswfc[:ic] = RRKJ_function(rgd.r[:ic], l, c, qi)
+    p()
 
     return pswfc
-
-
-def dlog_bessel(l, q, r):
-    return deriv1(lambda x: x*spherical_jn(l,q*x), r) / (r * spherical_jn(l,q*r))
-
-def deriv1(f, x, dx=0.001):
-    return (f(x+dx)-f(x-dx))/(2*dx)
-
-def deriv2(f, x, dx=0.001):
-    return (f(x+dx)-2*f(x)+f(x-dx))/(dx*dx)
-
-
-def find_qi(l, rc, ae_dlog, nbess):
-    # find all possible q_i's
-    qrange = np.linspace(0.01, 20, 100)
-    qi = []
-    for i in range(len(qrange)-1):
-        try:
-            q0 = bisect(lambda q: dlog_bessel(l,q,rc)-ae_dlog, a=qrange[i], b=qrange[i+1])
-        except ValueError:
-            pass
-        else:
-            if abs(dlog_bessel(l, q0, rc)) < 100:  # eliminate asymptotes
-                qi.append(q0)
-        # exit when found all q_i's
-        if len(qi) == nbess:
-            break
-
-    return np.array(qi)
 
 
 def RRKJ_function(r, l, c, qi):
