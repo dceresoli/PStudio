@@ -8,6 +8,7 @@
         beta = 0.2
         xmin = -8.0, dx = 0.005
         nld = 3, rlderiv = 2.2, eminld  = -5.0, emaxld  = 5.0, deld = 0.005
+        file_charge = 'rho.dat'
 /
 3
 1S  1  0  2.0  1

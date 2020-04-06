@@ -70,7 +70,7 @@ class RadialGrid:
 
     def deriv1(self, f):
         """Calculate the 1st derivative of a function"""
-        return fidff1_7p(f)/self.dx / self.r
+        return fdiff1_7p(f)/self.dx / self.r
 
     def deriv2(self, f):
         """Calculate the 1st derivative of a function"""

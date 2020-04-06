@@ -108,8 +108,9 @@ class AE(frozen):
             self.nelec += f
             self.orbitals.append(AEwfc(npoints, n, l, f, ene))
 
-        # density, potential and energies
+        # density, tau, potentials and energies
         self.n = np.zeros(npoints)
+        self.tau = np.zeros(npoints)
         self.vh = np.zeros(npoints)
         self.vxc = np.zeros(npoints)
         self.vion = -self.Z / self.rgd.r
@@ -271,6 +272,18 @@ class AE(frozen):
         self.n = self.n / (4.0*pi * self.rgd.r**2)
         return charge
 
+    def calculate_tau(self):
+        """Calculate the the kinetic energy density"""
+        self.tau = np.zeros(self.N)
+        r = self.rgd.r
+        for orb in self.orbitals:
+            l = orb.l
+            phi = orb.ur / r
+            dphi = self.rgd.deriv1(phi)
+            tau = dphi**2 + phi**2 * (l*(l+1))/r**2
+            self.tau += orb.f * 0.5 * tau
+        self.tau = self.tau / (4.0*pi)
+        
 
     def calculate_energies(self):
         self.Ekin = 0.0
@@ -328,28 +341,6 @@ class AE(frozen):
         p()
 
 
-
-#    def calculate_kinetic_energy_density(self):
-#        """Return the kinetic energy density"""
-#        return self.radial_kinetic_energy_density(self.f_j, self.l_j, self.u_j)
-#
-#    def radial_kinetic_energy_density(self, f_j, l_j, u_j):
-#        """Kinetic energy density from a restricted set of wf's"""
-#        shape = np.shape(u_j[0])
-#        dudr = np.zeros(shape)
-#        tau = np.zeros(shape)
-#        for f, l, u in zip(f_j, l_j, u_j):
-#            self.rgd.derivative(u, dudr)
-#            # contribution from angular derivatives
-#            if l > 0:
-#                tau += f * l * (l + 1) * np.where(abs(u) < 1e-160, 0, u)**2
-#            # contribution from radial derivatives
-#            dudr = u - self.r * dudr
-#            tau += f * np.where(abs(dudr) < 1e-160, 0, dudr)**2
-#        tau[1:] /= self.r[1:]**4
-#        tau[0] = tau[1]
-#
-#        return 0.5 * tau / (4 * pi)
 
 
 
