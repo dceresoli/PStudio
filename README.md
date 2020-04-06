@@ -1,5 +1,7 @@
 ![PStudio logo](/notebooks/pstudio-logo.png)
 
+[Goals](#goals) - [Installation](#installation) - [Usage](#usage) - [Milestones](#milestones)
+
 PseudopotentialStudio (PStudio) aims to become a full fledged
 Python package to generate atomic *pseudopotentials* for electronic
 structure codes like [Quantum-Espresso](https://www.quantum-espresso.org).
@@ -34,7 +36,7 @@ exchange and correlation and few Fortran routines from the
 * provide a didactic code to atomic/pseudopotential calculations
 * provide a Python library to develop quickly new pseudopotential schemes
 
-### Installation and requirements
+### Installation
 PStudio require a Fortran compiler like gfortran. After downloading the code,
 the Fortran routines can be built in-place:
 
@@ -56,6 +58,16 @@ ae.run(verbose=True)
 ```
 
 See the directory [notebooks](/notebooks) for further examples.
+
+### Milestones
+- [ ] Norm conserving TM and RRKJ methods
+- [ ] MetaGGA functionals, GIPAW reconstruction, ERIs
+- [ ] Norm conserving HSCV, ONCVPSP methods
+- [ ] Ultrasoft Vanderbilt, RRKJUS methods
+- [ ] Tables of PP radii from existing libraries
+- [ ] PAW pseudopotentials
+- [ ] other methods: MRPP, direct fitting (VBC-type)
+
 
 ### License
 PStudio includes routines from [ONCVPSP](http://www.mat-simresearch.com/)
