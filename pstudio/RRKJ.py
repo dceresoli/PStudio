@@ -20,7 +20,7 @@ from scipy.special import spherical_jn
 from math import log
 
 from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
-from .util import find_qi, deriv1, deriv2
+from .util import find_qi, dlog_rbessel, deriv1, deriv2
 from .util import p
 
 def pseudize_RRKJ(fae, l, rc, rgd, nbess=3, rho0=0.1, verbose=False, plot_c2=False, c2=0.0):
@@ -37,9 +37,10 @@ def pseudize_RRKJ(fae, l, rc, rgd, nbess=3, rho0=0.1, verbose=False, plot_c2=Fal
         for i,d in enumerate(ae_deriv):
             p('{0}-th AE derivative at rc: {1:+.6f}'.format(i, d))
 
-    # find q_i
+    # find q_is uch that [rc*jl(qi*rc)]'/(rc*jl(qi*rc)) = phi'(rc)/phi(rc)
     ae_dlog = ae_deriv[1]/ae_deriv[0]
-    qi = find_qi(l, rc, ae_dlog, nbess, rflag=True)
+    fqi = lambda q: dlog_rbessel(l, q, rc) - ae_dlog
+    qi = find_qi(nbess, fqi)
     if verbose:
         p('qi               : ', qi)
         p('estimated cutoff : {0:g} Ha'.format(0.5*qi[-1]**2))

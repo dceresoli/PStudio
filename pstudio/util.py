@@ -66,27 +66,23 @@ def dlog_bessel(l, q, r):
     """log derivative: (j_l(r*q))' / (j_l(r*q))"""
     return deriv1(lambda x: spherical_jn(l,q*x), r) / spherical_jn(l,q*r)
 
-def find_qi(l, rc, ae_dlog, nbess, rflag=True):
-    """find all possible q_i's to match the AE log der"""
-    qrange = np.linspace(0.05, 20, 100)
+
+def find_qi(nqi, fqi, qmax=20.0):
+    """find all possible q_i's such that fqi is zero"""
+    qrange = np.linspace(0.05, qmax, 100)
+
     qi = []
-
-    if rflag:
-        f = dlog_rbessel
-    else:
-        f = dlog_bessel
-
     for i in range(len(qrange)-1):
         try:
-            q0 = bisect(lambda q: f(l,q,rc)-ae_dlog, a=qrange[i], b=qrange[i+1])
+            q0 = bisect(fqi, a=qrange[i], b=qrange[i+1])
         except ValueError:
             pass
         else:
-            if abs(f(l, q0, rc)) < 100:  # eliminate asymptotes
+            if abs(fqi(q0)) < 100:  # eliminate asymptotes
                 qi.append(q0)
 
         # exit when found all q_i's
-        if len(qi) == nbess:
+        if len(qi) == nqi:
             break
 
     return np.array(qi)

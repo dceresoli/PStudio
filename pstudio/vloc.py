@@ -20,7 +20,7 @@ from scipy.special import spherical_jn
 from math import log, sin, cos, sqrt
 
 from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
-from .util import find_qi, deriv1, deriv2
+from .util import find_qi, dlog_bessel, deriv1, deriv2
 from .util import p
 
 def generate_vloc_RRKJ(vae, rgd, rc=None, verbose=False):
@@ -36,10 +36,11 @@ def generate_vloc_RRKJ(vae, rgd, rc=None, verbose=False):
         for i,d in enumerate(ae_deriv):
             p('{0}-th AE derivative at rc: {1:+.6f}'.format(i, d))
 
-    # find q_i
+    # find q_i such that [jl(qi*rc)]'/jl(qi*rc) = phi'(rc)/phi(rc)
     ae_dlog = ae_deriv[1]/ae_deriv[0]
     l = 0
-    qi = find_qi(l, rc, ae_dlog, nbess=2, rflag=False)
+    fqi = lambda q: dlog_bessel(l, q, rc) - ae_dlog
+    qi = find_qi(2, fqi)
     if verbose:
         p('qi               : ', qi)
         p('estimated cutoff : {0:g} Ha'.format(0.5*qi[-1]**2))
@@ -77,19 +78,14 @@ def generate_vloc_TM(vae, rgd, rc=None, verbose=False):
         for i,d in enumerate(ae_deriv):
             p('{0}-th AE derivative at rc: {1:+.6f}'.format(i, d))
 
-    # find q
+    # find q_i such that [rc*jl(qi*rc)]"/[jl(qi*rc)]' = (rc*phi(rc))"/phi(rc)'
     ae2_dlog = rc * ae_deriv[2]/ae_deriv[1]
+    l = 0
     f = lambda x: (-sin(x) + 2*sqrt(2)*sin(sqrt(2)*x/2))/x
     fp = lambda x: (x*(-cos(x) + 2*cos(sqrt(2)*x/2)) + sin(x) - 2*sqrt(2)*sin(sqrt(2)*x/2))/x**2
     fpp = lambda x: (x**2*(sin(x) - sqrt(2)*sin(sqrt(2)*x/2)) + 2*x*(cos(x) - 2*cos(sqrt(2)*x/2)) - 2*sin(x) + 4*sqrt(2)*sin(sqrt(2)*x/2))/x**2
-    qrange = np.linspace(0.05, 20, 100)
-    for i in range(len(qrange)-1):
-        try:
-            qi = bisect(lambda x: (rc*x)*fpp(rc*x)/fp(rc*x) - ae2_dlog, a=qrange[i], b=qrange[i+1])
-        except:
-            pass
-        else:
-            break
+    fqi = lambda q: (rc*q)*fpp(rc*q)/fp(rc*q) - ae2_dlog
+    qi = find_qi(1, fqi)[0]
     if verbose:
         p('qi               : ', qi)
         p('estimated cutoff : {0:g} Ha'.format(0.5*qi**2))
