@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """RRKJ pseudization like in VASP and QE"""
+
 import numpy as np
 from scipy.optimize import bisect, newton
-#from scipy.special import spherical_jn
 from math import log
 
 from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
 from .util import find_qi, dlog_rbessel, rqbess, rqbessp, rqbesspp
 from .util import p
+
 
 def pseudize_RRKJ(fae, l, rc, rgd, nbess=3, rho0=0.1, verbose=False, plot_c2=False, c2=0.0):
     """Pseudize a radial function using the RRKJ method"""
@@ -79,15 +80,14 @@ def RRKJ_function(r, l, c, qi):
     """Evaluate the RRKJ pseudowfc"""
     res = 0.0
     for i in range(len(qi)):
-        res += c[i] * r * spherical_jn(l, r*qi[i])
+        res += c[i] * rqbess(l,qi[i],r)
     return res
 
 def RRKJ_function_pp(r, l, c, qi):
     """Evaluate the 2nd derivative of the RRKJ pseudowfc"""
     res = 0.0
     for i in range(len(qi)):
-        f = lambda r: r*spherical_jn(l, r*qi[i])
-        res += c[i]*deriv2(f, r)
+        res += c[i] * rqbesspp(l,qi[i],r)
     return res
 
 def RRKJ_linear_problem(c2, qi, ae_deriv, rc, l):
@@ -97,12 +97,9 @@ def RRKJ_linear_problem(c2, qi, ae_deriv, rc, l):
 
     # first the left hand side
     lhs = np.zeros((3,3))
-    #lhs[0,:] = np.array([rc*spherical_jn(l,qi[i]*rc) for i in range(3)])
-    #lhs[1,:] = np.array([deriv1(lambda x: x*spherical_jn(l,qi[i]*x), rc) for i in range(3)])
-    #lhs[2,:] = np.array([deriv2(lambda x: x*spherical_jn(l,qi[i]*x), rc) for i in range(3)])
     lhs[0,:] = np.array([rqbess(l, qi[i], rc) for i in range(3)])
-    lhs[0,:] = np.array([rqbessp(l, qi[i], rc) for i in range(3)])
-    lhs[0,:] = np.array([rqbesspp(l, qi[i], rc) for i in range(3)])
+    lhs[1,:] = np.array([rqbessp(l, qi[i], rc) for i in range(3)])
+    lhs[2,:] = np.array([rqbesspp(l, qi[i], rc) for i in range(3)])
 
     # then the left hand side
     rhs = ae_deriv[0:3]

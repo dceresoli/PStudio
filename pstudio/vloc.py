@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """Generate a local potential"""
+
 import numpy as np
 from scipy.optimize import bisect, newton
 from scipy.special import spherical_jn
 from math import log, sin, cos, sqrt
 
 from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
-from .util import find_qi, dlog_bessel  #, deriv1, deriv2
+from .util import find_qi, dlog_bessel, qbess, qbessp, qbesspp
 from .util import p
 
 
@@ -48,8 +49,8 @@ def generate_vloc_RRKJ(vae, rgd, rc=None, verbose=False):
 
     # construct the linear system: two equations, two conditions
     lhs = np.zeros((2,2))
-    lhs[0,:] = np.array([spherical_jn(l,qi[i]*rc) for i in range(2)])
-    lhs[1,:] = np.array([deriv2(lambda x: spherical_jn(l,qi[i]*x), rc) for i in range(2)])
+    lhs[0,:] = np.array([qbess(l,qi[i],rc) for i in range(2)])
+    lhs[1,:] = np.array([qbesspp(l,qi[i],rc) for i in range(2)])
 
     # then the left hand side
     rhs = np.array([ae_deriv[0], ae_deriv[2]])
