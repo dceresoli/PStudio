@@ -55,13 +55,15 @@ def pseudize_TM(fae, l, rc, rgd, verbose=False, plot_c2=False, c2=0.0):
         p('TM coefficients:', c)
         p('norm error     :', np.sum(TM_function(rgd.r[:ic], l, c)**2 * rgd.dr[:ic])- ae_norm)
         p('V"(0) condition:', (2*l+5)*c[2] + c[1]*c[1])
+        p()
 
-    # return pseudized function
+    # return pseudized function and it's 2nd derivative to calcualte the pseudopotential
     pswfc = fae.copy()
     pswfc[:ic] = TM_function(rgd.r[:ic], l, c)
-    p()
-    
-    return pswfc
+    d2pswfc = rgd.deriv2(fae)
+    d2pswfc[:ic] = TM_function_pp(rgd.r[:ic], l, c)
+
+    return pswfc, d2pswfc
 
 
 def TM_function(r, l, c):
@@ -70,6 +72,15 @@ def TM_function(r, l, c):
     poly = np.array([c12,0,c10,0,c8,0,c6,0,c4,0,c2,0,c0])
     return r**(l+1) * np.exp(np.polyval(poly,r))
 
+def TM_function_pp(r, l, c):
+    """Evaluate the 2nd derivateice of the TM pseudowfc"""
+    c0, c2, c4, c6, c8, c10, c12 = c
+    poly = np.array([c12,0,c10,0,c8,0,c6,0,c4,0,c2,0,c0])
+    polyp = np.polyder(poly)
+    polypp = np.polyder(polyp)
+    phi = r**(l+1) * np.exp(np.polyval(poly,r))
+    return phi * ( l*(l+1)/r**2 + 2*(l+1)/r*np.polyval(polyp,r) \
+                   + np.polyval(polyp,r)**2 + np.polyval(polypp,r) )
 
 def TM_linear_problem(c2, ae_deriv, rc, l):
     """Construct the TM linear problem as a function of c2"""

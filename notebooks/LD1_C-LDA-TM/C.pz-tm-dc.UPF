@@ -3,7 +3,7 @@
   <PP_INFO><![CDATA[
 Generated using "atomic" code by A. Dal Corso  v.6.5
 Author: D.C.
-Generation date:  6Apr2020
+Generation date:  7Apr2020
 Pseudopotential type: NC
 Element:  C
 Functional: PZ
@@ -42,6 +42,7 @@ Functional: PZ
    	lloc = 1
    	tm = .true.
    	file_pseudopw = 'C.pz-tm-dc.UPF'
+        file_screen = 'c.screen'
         author = 'D.C.'
  /
 2
@@ -61,7 +62,7 @@ Functional: PZ
   <!--
  END OF HUMAN READABLE SECTION 
 -->
-  <PP_HEADER generated="Generated using &quot;atomic&quot; code by A. Dal Corso  v.6.5" author="D.C." date=" 6Apr2020" comment="" element=" C" pseudo_type="NC" relativistic="scalar" is_ultrasoft="false" is_paw="false" is_coulomb="false" has_so="false" has_wfc="false" has_gipaw="false" paw_as_gipaw="false" core_correction="false" functional="PZ" z_valence="4.000000000000e0" total_psenergy="-1.069688062745e1" wfc_cutoff="0.000000000000e0" rho_cutoff="0.000000000000e0" l_max="1" l_max_rho="2" l_local="1" mesh_size="2881" number_of_wfc="2" number_of_proj="1"/>
+  <PP_HEADER generated="Generated using &quot;atomic&quot; code by A. Dal Corso  v.6.5" author="D.C." date=" 7Apr2020" comment="" element=" C" pseudo_type="NC" relativistic="scalar" is_ultrasoft="false" is_paw="false" is_coulomb="false" has_so="false" has_wfc="false" has_gipaw="false" paw_as_gipaw="false" core_correction="false" functional="PZ" z_valence="4.000000000000e0" total_psenergy="-1.069688062745e1" wfc_cutoff="0.000000000000e0" rho_cutoff="0.000000000000e0" l_max="1" l_max_rho="2" l_local="1" mesh_size="2881" number_of_wfc="2" number_of_proj="1"/>
   <PP_MESH dx="5.000000000000e-3" mesh="2881" xmin="-8.000000000000e0" rmax="1.000000000000e2" zmesh="6.000000000000e0">
     <PP_R>
       5.591043798375198e-5 5.619069022040376e-5 5.647234722723768e-5 5.675541604569355e-5

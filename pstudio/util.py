@@ -39,6 +39,43 @@ def p(*args, **kwargs):
     if _out is not None:
         print(*args, **kwargs, file=_out)
 
+# spherical Bessel functions and their derivatives
+def qbess(l, q, r):
+    x = q*r
+    return spherical_jn(l,x)
+
+def qbessp(l, q, r):
+    x = q*r
+    return q*spherical_jn(l,x,derivative=True)
+
+def qbesspp(l, q, r):
+    x = q*r
+    a = (l*(l+1) - x*x)*spherical_jn(l,x) - 2*x*spherical_jn(l,x,derivative=True)
+    return a * q*q / (x*x)
+
+# r times spherical Bessel and their derivatives
+def rqbess(l, q, r):
+    return r*qbess(l, q, r)
+
+def rqbessp(l, q, r):
+    return qbess(l, q, r) + r*qbessp(l, q, r)
+
+def rqbesspp(l, q, r):
+    return 2*qbessp(l, q, r) + r*qbesspp(l, q, r)
+
+
+# log deriv of soherical Bessel functions
+def dlog_rbessel(l, q, r):
+    """log derivative: (r*q * j_l(r*q))' / (r*q * j_l(r*q))"""
+    return rqbessp(l, q, r) / rqbess(l, q, r)
+    #return deriv1(lambda x: x*spherical_jn(l,q*x), r) / (r * spherical_jn(l,q*r))
+
+def dlog_bessel(l, q, r):
+    """log derivative: (j_l(r*q))' / (j_l(r*q))"""
+    return qbessp(l, q, r) / qbess(l, q, r)
+    #return deriv1(lambda x: spherical_jn(l,q*x), r) / spherical_jn(l,q*r)
+
+
 
 # these routines are used both in TM and  RRKJ methods
 def find_rc_ic(rgd, rc):
@@ -57,15 +94,6 @@ def calc_ae_deriv(fae, rgd, rc, ic, nderiv):
     poly = np.polyfit(r[ic-10:ic+10], fae[ic-10:ic+10], deg=6)
     ae_deriv = [np.polyval(np.polyder(poly,i),rc) for i in range(nderiv)]
     return np.array(ae_deriv)
-
-def dlog_rbessel(l, q, r):
-    """log derivative: (r*q * j_l(r*q))' / (r*q * j_l(r*q))"""
-    return deriv1(lambda x: x*spherical_jn(l,q*x), r) / (r * spherical_jn(l,q*r))
-
-def dlog_bessel(l, q, r):
-    """log derivative: (j_l(r*q))' / (j_l(r*q))"""
-    return deriv1(lambda x: spherical_jn(l,q*x), r) / spherical_jn(l,q*r)
-
 
 def find_qi(nqi, fqi, qmax=20.0):
     """find all possible q_i's such that fqi is zero"""
@@ -88,9 +116,9 @@ def find_qi(nqi, fqi, qmax=20.0):
     return np.array(qi)
 
 
-# numerical derivatives of a real function
-def deriv1(f, x, dx=0.001):
-    return (f(x+dx)-f(x-dx))/(2*dx)
-
-def deriv2(f, x, dx=0.001):
-    return (f(x+dx)-2*f(x)+f(x-dx))/(dx*dx)
+## numerical derivatives of a real function
+#def deriv1(f, x, dx=0.001):
+#    return (f(x+dx)-f(x-dx))/(2*dx)
+#
+#def deriv2(f, x, dx=0.001):
+#    return (f(x+dx)-2*f(x)+f(x-dx))/(dx*dx)

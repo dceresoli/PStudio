@@ -1,5 +1,5 @@
 
-     Program LD1 v.6.5 starts on  4Apr2020 at 17: 6:41 
+     Program LD1 v.6.5 starts on  8Apr2020 at 13: 1:57 
 
      This program is part of the open-source Quantum ESPRESSO suite
      for quantum simulation of materials; please cite
@@ -56,25 +56,7 @@
      --------------------- Generating NC pseudopotential ---------------------
 
 
-      Generating local potential from pseudized AE potential:
-      Matching radius rcloc =   1.5400
- logderae=  -1.32048984011748     
- lam=           0
- flag=           0
-
-      Local pseudo, rcloc= 1.535 Estimated cut-off energy=    10.27 Ry
- logderae= -0.372673933656123     
- lam=           0
- flag=           1
-           3   1.21722626984119        3.14764705449342     
-   5.16502144262194       0.000000000000000E+000  0.000000000000000E+000
- BEFORE=  0.979353693333096       7.910123056162487E-002 -5.845492389472089E-002
- AFTER = -0.951134619968903       0.191278681574654       0.230937924560274     
-
-
-      Wfc   2S  rcut= 1.535  Estimated cut-off energy=       53.35 Ry
-      AE norm =  0.543  PS norm =  0.543
-      This function has    0 nodes for 0 < r <    1.535
+      Generating local pot.: lloc=0, matching radius rcloc =   1.5400
  logderae= -0.236832683338093     
  lam=           1
  flag=           1
@@ -89,8 +71,7 @@
       This function has    0 nodes for 0 < r <    1.535
 
       The bmat matrix
-     0.40321     0.00000
-     0.00000    -0.57556
+    -1.08145
 
      ------------------- End of pseudopotential generation -------------------
 
@@ -133,13 +114,13 @@
      ------------------------ End of All-electron run ------------------------
 
      Computing logarithmic derivative in   2.20504
- logderae= -0.372673933656118     
+ logderae= -0.170236618799529     
  lam=           0
  flag=           1
-           3   1.21722626984119        3.14764705449342     
-   5.16502144262194       0.000000000000000E+000  0.000000000000000E+000
- BEFORE=  0.979353693333041       7.910123056212354E-002 -5.845492389516486E-002
- AFTER = -0.951134619968873       0.191278681575864       0.230937924562033     
+           3   1.27679601609707        3.56805494576692     
+   5.90878758057951       0.000000000000000E+000  0.000000000000000E+000
+ BEFORE=  0.929049172047160       0.125064366687506      -5.411353873466578E-002
+ AFTER = -0.965428061188763       0.360406164443615       0.258058296585050     
  logderae= -0.236832683338090     
  lam=           1
  flag=           1
@@ -149,7 +130,7 @@
  AFTER =   1.51867344221114       0.771322759068290       0.159268914592313     
      Computing logarithmic derivative in   2.20504
      Computing the partial wave expansion 
-     R is outside the sphere for l=    0 j= 0.00
+       no projector for channel:   0
      R is outside the sphere for l=    1 j= 0.00
        no projector for channel:   2
 
@@ -166,16 +147,15 @@
      1 0     2S   1( 2.00)       -1.00281       -1.00281        0.00001
      2 1     2P   1( 2.00)       -0.39837       -0.39837        0.00000
 
-     eps = 7.1E-15  iter =  3
+     eps = 6.8E-15  iter = 11
  
      Etot =     -74.880961 Ry,     -37.440481 Ha,   -1018.807383 eV
-     Etotps =   -10.680796 Ry,      -5.340398 Ha,    -145.319639 eV
+     Etotps =   -10.693103 Ry,      -5.346551 Ha,    -145.487072 eV
 
-     Ekin =       6.281656 Ry,       3.140828 Ha,      85.466290 eV
-     Encl =     -22.593418 Ry,     -11.296709 Ha,    -307.399110 eV
-     Ehrt =       8.716651 Ry,       4.358326 Ha,     118.596084 eV
-     Ecxc =      -2.740990 Ry,      -1.370495 Ha,     -37.293073 eV
-     Epseu=      -0.344696 Ry,      -0.172348 Ha,      -4.689830 eV
+     Ekin =       4.034720 Ry,       2.017360 Ha,      54.895158 eV
+     Encl =     -20.716016 Ry,     -10.358008 Ha,    -281.855760 eV
+     Ehrt =       8.728848 Ry,       4.364424 Ha,     118.762031 eV
+     Ecxc =      -2.740654 Ry,      -1.370327 Ha,     -37.288500 eV
 
      ---------------------- End of pseudopotential test ----------------------
 
@@ -186,37 +166,37 @@
 
      Cutoff (Ry) :   60.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0028 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0026 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      Cutoff (Ry) :   70.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0028 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0028 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      Cutoff (Ry) :   80.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0028 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0028 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      Cutoff (Ry) :   90.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0028 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0028 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      Cutoff (Ry) :  100.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0028 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0028 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      Cutoff (Ry) :  110.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0029 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0028 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      Cutoff (Ry) :  120.0
                            N = 1       N = 2       N = 3
-     E(L=0) =        -1.0029 Ry   -0.0120 Ry    0.0263 Ry
+     E(L=0) =        -1.0028 Ry   -0.0121 Ry    0.0263 Ry
      E(L=1) =        -0.3986 Ry    0.0183 Ry    0.0526 Ry
 
      -------------- End of Bessel function test ------------------------

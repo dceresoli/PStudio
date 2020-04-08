@@ -20,8 +20,9 @@ from scipy.special import spherical_jn
 from math import log, sin, cos, sqrt
 
 from .util import find_rc_ic, calc_ae_norm, calc_ae_deriv
-from .util import find_qi, dlog_bessel, deriv1, deriv2
+from .util import find_qi, dlog_bessel  #, deriv1, deriv2
 from .util import p
+
 
 def generate_vloc_RRKJ(vae, rgd, rc=None, verbose=False):
     """Genetate the local potential by pseudizing the AE potential with two Bessel functions"""

@@ -68,13 +68,31 @@ class RadialGrid:
         """Return the Hartee potential given a density"""
         return _hartree(rho, self.zeta, self.r)
 
+    #def deriv1(self, f):
+    #    """Calculate the 1st derivative of a function"""
+    #    return fdiff1_7p(f)/self.dx / self.r
+
+    #def deriv2(self, f):
+    #    """Calculate the 1st derivative of a function"""
+    #    return (fdiff2_7p(f)/self.dx**2 - fdiff1_7p(f)/self.dx) / self.r**2
+
     def deriv1(self, f):
         """Calculate the 1st derivative of a function"""
-        return fdiff1_7p(f)/self.dx / self.r
+        r = self._decimate_towards_zero(self.r)
+        g = self._decimate_towards_zero(f)
+        spl = InterpolatedUnivariateSpline(r, g, k=3)
+        return spl.derivative(n=1)(self.r)
 
     def deriv2(self, f):
         """Calculate the 1st derivative of a function"""
-        return (fidff2_7p(f)/self.dx**2 - fdiff1_7p(f)/self.dx) / self.r**2
+        r = self._decimate_towards_zero(self.r)
+        g = self._decimate_towards_zero(f)
+        spl = InterpolatedUnivariateSpline(r, g, k=3)
+        return spl.derivative(n=2)(self.r)
+
+    def _decimate_towards_zero(self, func):
+        m = self.floor(0.01)
+        return np.concatenate( (func[:m:20], func[m:]) )
 
     def kinetic(self, f, l):
         """Apply the kinetic energy of a function"""

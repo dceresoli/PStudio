@@ -19,6 +19,7 @@
    	lloc = 1
    	tm = .true.
    	file_pseudopw = 'C.pz-tm-dc.UPF'
+        file_screen = 'c.screen'
         author = 'D.C.'
  /
 2
