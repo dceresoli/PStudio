@@ -20,6 +20,12 @@ from scipy.optimize import bisect
 from scipy.special import spherical_jn
 import sys
 
+
+# physical constants
+hartree = 27.211386        # in #!/usr/bin/env python
+alpha = 1/137.035999084    # fine structure constant
+
+
 # global output file and helper function
 _out = sys.stdout
 
@@ -38,6 +44,19 @@ def p(*args, **kwargs):
     global _out
     if _out is not None:
         print(*args, **kwargs, file=_out)
+
+
+# inherit from this class to freeze class attributes
+class frozen:
+    __isfrozen = False
+    def __setattr__(self, key, value):
+        if self.__isfrozen and not hasattr(self, key):
+            raise TypeError( "%r is a frozen class" % self )
+        object.__setattr__(self, key, value)
+
+    def _freeze(self):
+        self.__isfrozen = True
+
 
 # spherical Bessel functions and their derivatives
 def qbess(l, q, r):
@@ -114,6 +133,19 @@ def find_qi(nqi, fqi, qmax=20.0):
             break
 
     return np.array(qi)
+
+
+# Thomas Fermi potential (from ONCVSPS src/tfaport.f90)
+def thomas_fermi(z, r):
+    """Thomas-Fermi potential"""
+    b = (0.69395656/z)**(1.0/3.0)
+    x = r / b
+    xs = np.sqrt(x)
+
+    t = z/(1.0+xs*(0.02747 - x*(0.1486 - 0.007298*x)) + x*(1.243 + x*(0.2302 + 0.006944*x)))
+
+    t[t<1] = 1
+    return -t/r
 
 
 ## numerical derivatives of a real function

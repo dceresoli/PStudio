@@ -35,11 +35,15 @@ class RadialGrid:
         self.xmin, self.xmax = log(zeta*rmin), log(zeta*rmax)
         self.x =  np.linspace(self.xmin, self.xmax, npoints)
         self.dx = (self.x[-1] - self.x[0])/npoints
+        self.dx = self.x[1] - self.x[0]
         self.r = np.exp(self.x)/zeta
         self.dr = self.dx * self.r
 
     def __len__(self):
         return self.npoints
+
+    def r_of_x(self, x):
+        return np.exp(x)/self.zeta
 
     def r2g(self, r):
         x = np.log(self.zeta*r)
@@ -57,7 +61,7 @@ class RadialGrid:
     def integrate(self, f):
         """Integrate a function using the trapezium rule"""
         res = f[0]*self.dr[0] + f[-1]*self.dr[-1]
-        res += 2.0*sum(f[1:-1]*self.dr[1:-1])
+        res += 2.0*np.sum(f[1:-1]*self.dr[1:-1])
         return res/2.0
 
     def interpolate(self, f, r_x):

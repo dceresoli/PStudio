@@ -23,11 +23,12 @@ import numpy as np
 
 from .configuration import *
 from .radialgrid import RadialGrid
+from .shoot import shoot
 from .oncvpsp_routines.oncvpsp import lschfb
 from .xc import XC
+from .util import frozen, thomas_fermi, hartree, alpha
 from .util import p
 
-hartree = 27.211386
 
 class AEwfc:
     # TODO: add normalize, initialize, plot, save, etc...
@@ -42,7 +43,6 @@ class AEwfc:
         self.e = e
         self.spin = spin
         self.ur = np.zeros(npoints)   # wavefunction
-        self.up = np.zeros(npoints)   # derivative
 
     def normalize(self, rgd):
         """Normalize a wavefunction"""
@@ -61,16 +61,6 @@ class AEwfc:
         if self.ur[imax] < 0.0:
             self.ur = -self.ur
 
-class frozen:
-    __isfrozen = False
-    def __setattr__(self, key, value):
-        if self.__isfrozen and not hasattr(self, key):
-            raise TypeError( "%r is a frozen class" % self )
-        object.__setattr__(self, key, value)
-
-    def _freeze(self):
-        self.__isfrozen = True
-
 
 class AE(frozen):
     """Object for doing an atomic DFT calculation."""
@@ -82,11 +72,12 @@ class AE(frozen):
         Example::
 
           fe = AE('Fe', xcname='PBE')
-          fe.run(restart=False)
+          fe.run()
         """
 
         # initialize variables
         self.symbol = symbol
+        self.xcname = xcname
         self.xc = XC(xcname)
         self.relativity = relativity
 
@@ -109,20 +100,19 @@ class AE(frozen):
             self.orbitals.append(AEwfc(npoints, n, l, f, ene))
 
         # density, tau, potentials and energies
-        self.n = np.zeros(npoints)
-        self.tau = np.zeros(npoints)
-        self.vh = np.zeros(npoints)
-        self.vxc = np.zeros(npoints)
-        self.vion = -self.Z / self.rgd.r
-        self.vtot = np.zeros(npoints)
-        self.Etot = 0.0        # total energy
-        self.Ekin = 0.0        # kinetic energy
-        self.Eion = 0.0        # ionic energy
-        self.Eh = 0.0          # Hartree energy
-        self.Exc = 0.0         # XC energy
-        self.Evxc = 0.0        # integral of rho*vxc
-        self.restartfile = '%s-AE.npz' % (self.symbol)
-        self._freeze()         # no more attributes
+        self.rho = np.zeros(npoints)         # charge density
+        self.tau = np.zeros(npoints)         # kinetic energy density
+        self.vh = np.zeros(npoints)          # Hartree potential
+        self.vxc = np.zeros(npoints)         # XC potential
+        self.vion = -self.Z / self.rgd.r     # ionic potential
+        self.vtot = np.zeros(npoints)        # total KS potential
+        self.Etot = 0.0                      # total energy
+        self.Ekin = 0.0                      # kinetic energy
+        self.Eion = 0.0                      # ionic energy
+        self.Eh = 0.0                        # Hartree energy
+        self.Exc = 0.0                       # XC energy
+        self.Evxc = 0.0                      # integral of rho*vxc
+        self._freeze()                       # prevent adding more attributes
 
         # print summary
         p()
@@ -143,7 +133,7 @@ class AE(frozen):
             orb.normalize(self.rgd)
 
 
-    def run(self, restart=False, verbose=False, mixing=0.2, thresh=1e-6):
+    def run(self, verbose=False, mixing=0.2, thresh=1e-6):
         """Perform an all-electron SCF calculation"""
         N = self.N
         r = self.rgd.r
@@ -151,33 +141,23 @@ class AE(frozen):
         Z = self.Z
         p('{0} radial gridpoints in [{1:g},{2:g}]'.format(N, r[0], r[-1]))
 
-        # try to restart the density
-        if restart:
-            try:
-                self.n = np.load(restartfile, 'r')['rho']
-            except:
-                restart = False
-            else:
-                self.calculate_potential()
-
-        # from scratch or if restart was not succesful
-        if not restart:
-            self.vtot = self.vion.copy()
+        # guess initial potential
+        self.vtot = thomas_fermi(Z, r)
 
         # SCF cycle
         nitermax = 300
-        n_old = np.zeros(N)
+        rho_old = np.zeros(N)
         Etot_old = 0.0
 
         for niter in range(1, nitermax):
             # solve radial Schrodinger equation for each orbital
-            self.solve()
+            self.solve_all()
 
             # rho mixing
             charge = self.calculate_density()
             if niter > 1:
-                self.n = mixing * self.n + (1.0-mixing) * n_old
-            n_old = self.n.copy()
+                self.rho = mixing * self.rho + (1.0-mixing) * rho_old
+            rho_old = self.rho.copy()
 
             # calculate hartree and XC potential
             self.calculate_potential()
@@ -208,69 +188,49 @@ class AE(frozen):
         self.print_energies()
         self.print_eigenvalues()
 
-        #self.write_restart()
-        # TODO: fix this
-        # write restart file
-        #try:
-        #    fd = open(restartfile, 'wb')
-        #except IOError:
-        #    pass
-        #else:
-        #    pickle.dump(n, fd)
-        #    try:
-        #        os.chmod(restartfile, 0o666)
-        #    except OSError:
-        #        pass
-        # TODO save to npz file
-        #for m, l, u in zip(n_j, l_j, self.u_j):
-        #    self.write(u, 'ae', n=m, l=l)
-        #
-        #tau = self.calculate_kinetic_energy_density()
-        #self.write(n, 'n')
-        #self.write(vr, 'vr')
-        #self.write(vHr, 'vHr')
-        #self.write(self.vXC, 'vXC')
-        #self.write(tau, 'tau')
 
-    def solve(self):
-        """Solve the radial Schrodinger equation using oncvpsp routines"""
-        if self.relativity == 'FR':
-            raise NotImplementedError('FR not implemented yet!')
-
-        # in inpurt vr is the potential*r
-        srel = (self.relativity == 'SR')
+    def solve_all(self):
+        """Solve the radial Schrodinger equation for all orbitals"""
 
         # solve for each quantum state separately
         for orb in self.orbitals:
             n, l, f, e = orb.n, orb.l, orb.f, orb.e
             if f < 0.0:  # do not solve unbound states (negative occupations)
                 orb.ur = np.zeros_like(self.rgd.r)
-                orb.up = np.zeros_like(self.rgd.r)
                 orb.e = 0.0
                 continue
 
             et = np.array(e)
-            ierr, orb.ur, orb.up, match = lschfb(n, l, et, self.rgd.r, self.vtot, self.Z, srel)
+            orb.ur, orb.e, ierr = self.solve_orbital(n, l)
             if ierr == 0:
-                orb.e = et
                 orb.normalize(self.rgd)
             else:
-                orbital = tuple_to_configuration([(n,l,f)])
+                # zero energy marks an unbound state
+                orb.e = 0.0
                 orb.ur[:] = 0.0
-                #if f >= 0.0:
-                #    raise Warning('Error solving orbital {0}'.format(orbital))
-                #else:
-                #    raise Warning('Problem solving orbital {0}'.format(orbital))
+
+
+    def solve_orbital(self, n, l):
+        """Solve the radial Schrodinger equation using oncvpsp routines"""
+
+        if self.relativity == 'FR':
+            raise NotImplementedError('FR not implemented yet!')
+
+        srel = (self.relativity == 'SR')
+        et = np.array(0.0)
+        ierr, ur, _, match = lschfb(n, l, et, self.rgd.r, self.vtot, self.Z, srel)
+        return ur, et, ierr
 
 
     def calculate_density(self):
         """Calculate the electron charge density divided by 4pi"""
-        self.n = np.zeros(self.N)
+        self.rho = np.zeros(self.N)
         for orb in self.orbitals:
-            self.n += orb.f * orb.ur*orb.ur
-        charge = self.rgd.integrate(self.n)
-        self.n = self.n / (4.0*pi * self.rgd.r**2)
+            self.rho += orb.f * orb.ur*orb.ur
+        charge = self.rgd.integrate(self.rho)
+        self.rho = self.rho / (4.0*pi * self.rgd.r**2)
         return charge
+
 
     def calculate_tau(self):
         """Calculate the the kinetic energy density"""
@@ -283,7 +243,7 @@ class AE(frozen):
             tau = dphi**2 + phi**2 * (l*(l+1))/r**2
             self.tau += orb.f * 0.5 * tau
         self.tau = self.tau / (4.0*pi)
-        
+
 
     def calculate_energies(self):
         self.Ekin = 0.0
@@ -292,18 +252,20 @@ class AE(frozen):
         self.Etot = self.Ekin - self.Eh + self.Exc - self.Evxc
         self.Ekin = self.Etot - self.Eion - self.Eh - self.Exc
 
+
     def calculate_potential(self):
-        self.Eh, self.vh = self.calculate_hartree(self.n)
-        self.Eion = self.rgd.integrate(self.vion * self.n*self.rgd.r**2) * 4.0*pi
-        self.calculate_xc(self.n)
-        self.Exc, self.vxc, self.Evxc = self.calculate_xc(self.n)
+        self.Eh, self.vh = self.calculate_hartree(self.rho)
+        self.Eion = self.rgd.integrate(self.vion * self.rho*self.rgd.r**2) * 4.0*pi
+        self.Exc, self.vxc, self.Evxc = self.calculate_xc(self.rho)
         self.vtot = self.vh + self.vxc + self.vion
+
 
     def calculate_hartree(self, rho):
         """Calculate the Hartree potential from a given density"""
         v_h = self.rgd.hartree(rho*4*pi)
         e_h = 0.5*self.rgd.integrate(v_h * rho * self.rgd.r**2) * 4.0*pi
         return e_h, v_h
+
 
     def calculate_xc(self, rho):
         """Calculate the XC potential from a given density"""
@@ -314,6 +276,7 @@ class AE(frozen):
         e_xc = self.rgd.integrate(e_xc * rho * r**2) * 4.0*pi
         e_vxc = self.rgd.integrate(v_xc * rho * r**2) * 4.0*pi
         return e_xc, v_xc, e_vxc
+
 
     def print_energies(self):
         """Print energy terms"""
@@ -336,11 +299,10 @@ class AE(frozen):
             label = tuple_to_configuration([(orb.n,orb.l,orb.f)])
             rmax = orb.find_rmax(self.rgd)
             orb.make_positive(self.rgd, rmax)
-            p('{0:8s} {1:12.6f} Ha {2:12.6f} eV {3:8.3f}'.format(label, \
-             orb.e, orb.e*hartree, rmax))
+            bound = 'unbound' if orb.e == 0 else ''
+            p('{0:8s} {1:12.6f} Ha {2:12.6f} eV {3:8.3f} {4}'.format(label, \
+             orb.e, orb.e*hartree, rmax, bound))
         p()
-
-
 
 
 
