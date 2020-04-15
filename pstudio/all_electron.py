@@ -23,7 +23,6 @@ import numpy as np
 
 from .configuration import *
 from .radialgrid import RadialGrid
-from .shoot import shoot
 from .oncvpsp_routines.oncvpsp import lschfb
 from .xc import XC
 from .util import frozen, thomas_fermi, hartree, alpha

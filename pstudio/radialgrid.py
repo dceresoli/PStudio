@@ -72,23 +72,23 @@ class RadialGrid:
         """Return the Hartee potential given a density"""
         return _hartree(rho, self.zeta, self.r)
 
-    #def deriv1(self, f):
-    #    """Calculate the 1st derivative of a function"""
-    #    return fdiff1_7p(f)/self.dx / self.r
+    def fdiff_deriv1(self, f):
+        """Calculate the 1st derivative of a function by finite differences"""
+        return fdiff1_7p(f)/self.dx / self.r
 
-    #def deriv2(self, f):
-    #    """Calculate the 1st derivative of a function"""
-    #    return (fdiff2_7p(f)/self.dx**2 - fdiff1_7p(f)/self.dx) / self.r**2
+    def fdiff_deriv2(self, f):
+        """Calculate the 1st derivative of a function by finite differences"""
+        return (fdiff2_7p(f)/self.dx**2 - fdiff1_7p(f)/self.dx) / self.r**2
 
-    def deriv1(self, f):
-        """Calculate the 1st derivative of a function"""
+    def spline_deriv1(self, f):
+        """Calculate the 1st derivative of a function by cubic spline derivative"""
         r = self._decimate_towards_zero(self.r)
         g = self._decimate_towards_zero(f)
         spl = InterpolatedUnivariateSpline(r, g, k=3)
         return spl.derivative(n=1)(self.r)
 
-    def deriv2(self, f):
-        """Calculate the 1st derivative of a function"""
+    def spline_deriv2(self, f):
+        """Calculate the 1st derivative of a function by cucbic spline derivative"""
         r = self._decimate_towards_zero(self.r)
         g = self._decimate_towards_zero(f)
         spl = InterpolatedUnivariateSpline(r, g, k=3)
