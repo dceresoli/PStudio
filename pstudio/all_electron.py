@@ -206,7 +206,6 @@ class AE(frozen):
             else:
                 # zero energy marks an unbound state
                 orb.e = 0.0
-                orb.ur[:] = 0.0
 
 
     def solve_orbital(self, n, l):
