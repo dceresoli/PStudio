@@ -48,14 +48,14 @@ class XC:
                 num = xc_functional_get_number(name)
             self.xc.append(LibXCFunctional(num, spin=spin))
 
-    def get_descrption(self):
+    def get_description(self):
         if self.xc == None:
             return "LDA (PZ parametrization) in python"
 
-        desc = '\n'.join([xc.describe() for xc in self.xc]) 
+        desc = '\n\n'.join([xc.describe() for xc in self.xc])
         return desc
 
-    def get_name(self):      
+    def get_name(self):
         if self.xc == None:
             return "LDA-python"
 
@@ -73,13 +73,17 @@ class XC:
         inp = {'rho': rho, 'sigma': sigma}
         out = self.xc[0].compute(inp)
         for i in range(1, len(self.xc)):
-            tmp = self.xc[1].compute(inp)
+            tmp = self.xc[i].compute(inp)
             for k in tmp.keys():
                 out[k] += tmp[k]
 
         # the reshaping is to kill the first dimension
-        return out['zk'].reshape((-1)), out['vrho'].reshape((-1))
+        if 'vsigma' not in out:
+            out['vsigma'] = np.zeros_like(rho)
 
+        return out['zk'].reshape((-1)), \
+               out['vrho'].reshape((-1)), \
+               out['vsigma'].reshape((-1))
 
 
 

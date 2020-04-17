@@ -102,6 +102,18 @@ class RadialGrid:
         """Apply the kinetic energy of a function"""
         return -0.5*self.deriv2(f) + 0.5*(l*(l+1))/self.r**2
 
+    def gradient(self, f):
+        """Gradient of a spherical function"""
+        return self.fdiff_deriv1(f)
+
+    def divergence(self, f):
+        """Divergence of a spherical function"""
+        return 2/self.r * f + self.fdiff_deriv1(f)
+
+    def laplacian(self, f):
+        """Laplacian of a spherical function"""
+        return 2/self.r * self.fdiff_deriv1(f) + self.fdiff_deriv2(f)
+        
     def fft(self, f, l=0, N=None):
         """Fourier transform, return |G| and f(|G|) arrays"""
         if N is None:

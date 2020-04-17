@@ -269,7 +269,15 @@ class AE(frozen):
         """Calculate the XC potential from a given density"""
         r = self.rgd.r
 
-        e_xc, v_xc = self.xc.compute(rho, None)
+        # handle the LDA and GGA case
+        grad_rho = self.rgd.gradient(self.rho)
+        sigma = grad_rho**2
+        e_xc, v_xc, v_sigma = self.xc.compute(rho, sigma)
+
+        # this is the second term (gradient correction)
+        second_term = 2.0*v_sigma*grad_rho  # 2 dExc/d\sigma |\nabla \rho|
+        gradcorr = self.rgd.divergence(second_term)
+        v_xc -= gradcorr
 
         e_xc = self.rgd.integrate(e_xc * rho * r**2) * 4.0*pi
         e_vxc = self.rgd.integrate(v_xc * rho * r**2) * 4.0*pi
