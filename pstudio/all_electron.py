@@ -21,7 +21,7 @@ import pickle
 from math import pi, sqrt, log
 import numpy as np
 
-from .configuration import *
+from .periodic_table import *
 from .radialgrid import RadialGrid
 from .oncvpsp_routines.oncvpsp import lschfb
 from .xc import XC
@@ -82,13 +82,13 @@ class AE(frozen):
 
         # initialize radial grid
         el = Element(symbol)
-        self.Z = el.get_atomic_number()
+        self.Z = el.z
         self.N = npoints
         self.rgd = RadialGrid(self.Z, rmin, rmax, self.N)
 
         # initialize configuration
         if config is None:
-            nlf = parse_configuration(el.get_configuration())
+            nlf = parse_configuration(el.configuration)
         else:
             nlf = parse_configuration(config)
         self.orbitals = []
@@ -120,7 +120,7 @@ class AE(frozen):
                    'FR': 'fully relativistic'}[relativity]
         except KeyError:
             raise RuntimeError('Unknown relavistic method (SR, NR and FR accepted)')
-        p('{0} atomic calculation for {1} ({2}, Z={3})'.format(rel, symbol, el.get_name(), self.Z))
+        p('{0} atomic calculation for {1} ({2}, Z={3})'.format(rel, symbol, el.name, self.Z))
         p('configuration: {0}, {1:g} electrons'.format(tuple_to_configuration(nlf),self.nelec))
         p('exchange-correlation: {0}'.format(self.xc.get_name()))
 
@@ -217,6 +217,8 @@ class AE(frozen):
         srel = (self.relativity == 'SR')
         et = np.array(0.0)
         ierr, ur, _, match = lschfb(n, l, et, self.rgd.r, self.vtot, self.Z, srel)
+        if ierr != 0:
+            et = 0.0
         return ur, et, ierr
 
 

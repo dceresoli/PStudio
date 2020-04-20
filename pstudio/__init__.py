@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from .all_electron import AE
-from .configuration import *
+from .periodic_table import *
 from .util import *
 
 # exported symbols

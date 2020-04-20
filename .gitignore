@@ -3,3 +3,6 @@ __pycache__
 *.so
 *.dll
 *.dylib
+*.wfc
+*.dat
+vx.pot
