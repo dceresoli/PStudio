@@ -2,7 +2,7 @@
         title = 'Ti'
 	prefix = 'ti'
         zed = 22
-        dft = 'PZ'
+        dft = 'pz'
 	rel = 1
         iswitch = 1
         beta = 0.2
