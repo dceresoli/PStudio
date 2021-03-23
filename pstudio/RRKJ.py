@@ -70,7 +70,7 @@ def pseudize_RRKJ(fae, l, rc, rgd, nbess=3, rho0=0.1, verbose=False, plot_c2=Fal
     # return pseudized function and it's 2nd derivative to calcualte the pseudopotential
     pswfc = fae.copy()
     pswfc[:ic] = RRKJ_function(rgd.r[:ic], l, c, qi)
-    d2pswfc = rgd.deriv2(fae)
+    d2pswfc = rgd.spline_deriv2(fae)
     d2pswfc[:ic] = RRKJ_function_pp(rgd.r[:ic], l, c, qi)
 
     return pswfc, d2pswfc

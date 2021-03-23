@@ -60,7 +60,7 @@ def pseudize_TM(fae, l, rc, rgd, verbose=False, plot_c2=False, c2=0.0):
     # return pseudized function and it's 2nd derivative to calcualte the pseudopotential
     pswfc = fae.copy()
     pswfc[:ic] = TM_function(rgd.r[:ic], l, c)
-    d2pswfc = rgd.deriv2(fae)
+    d2pswfc = rgd.spline_deriv2(fae)
     d2pswfc[:ic] = TM_function_pp(rgd.r[:ic], l, c)
 
     return pswfc, d2pswfc
