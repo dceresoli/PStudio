@@ -15,7 +15,7 @@ set_output('-')
 r0 = 3.5/0.52917
 confinement = ConfinementPotential('woods-saxon', r0=r0, W=2.0, a=4.0)
 #ae = AE('Si', config='[Ne] 3s2 3p2 3d0 4s0 4p0 4d0 4f0 5s0 5p0 5d0 6s0 6p0', xcname='LDA', relativity='SR', confinement=confinement)
-ae = AE('Pt', config='[Xe] 4f14 5d9 6s1 6p0 7s0 7p0 6d0 5f0', xcname='LDA', relativity='SR', confinement=confinement)
+ae = AE('Pt', config='[Xe] 4f14 5d9 6s1 6p0 7s0 7p0 6d0 5f0', xcname='LDA-py', relativity='SR', confinement=confinement)
 
 try:
     ae.run(verbose=True)

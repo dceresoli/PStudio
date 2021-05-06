@@ -68,7 +68,7 @@ class XC:
             vxc = np.zeros_like(rho)
             for i in range(len(rho)):
                 exc[i], vxc[i] = lda_xc(rho[i])
-            return exc, vxc
+            return exc, vxc, np.zeros_like(rho)
 
         inp = {'rho': rho, 'sigma': sigma}
         out = self.xc[0].compute(inp)
