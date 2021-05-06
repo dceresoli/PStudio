@@ -27,6 +27,7 @@ from .oncvpsp_routines.oncvpsp import lschfb
 from .xc import XC
 from .util import frozen, thomas_fermi, hartree, alpha
 from .util import p
+from .confinement import ConfinementPotential
 
 
 class AEwfc:
@@ -65,7 +66,7 @@ class AE(frozen):
     """Object for doing an atomic DFT calculation."""
 
     def __init__(self, symbol, xcname='LDA', relativity='SR', config=None,
-                 rmin=1e-5, rmax=100, npoints=2001):
+                 rmin=1e-5, rmax=100, npoints=2001, confinement=ConfinementPotential('none')):
         """Perform an AE atomic DFT calculation.
 
         Example::
@@ -79,6 +80,7 @@ class AE(frozen):
         self.xcname = xcname
         self.xc = XC(xcname)
         self.relativity = relativity
+        self.confinement = confinement
 
         # initialize radial grid
         el = Element(symbol)
@@ -216,7 +218,7 @@ class AE(frozen):
 
         srel = (self.relativity == 'SR')
         et = np.array(0.0)
-        ierr, ur, _, match = lschfb(n, l, et, self.rgd.r, self.vtot, self.Z, srel)
+        ierr, ur, _, match = lschfb(n, l, et, self.rgd.r, self.vtot + self.confinement(self.rgd.r), self.Z, srel)
         if ierr != 0:
             et = 0.0
         return ur, et, ierr
